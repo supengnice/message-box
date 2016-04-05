@@ -9,7 +9,6 @@
         left: 0;
         width: 192px;
     }
-
     .dashboard-sidebar .dashboard-sidebar-header {
         width: 192px;
         height: 60px;
@@ -20,12 +19,10 @@
         top: 0;
         left: 0;
     }
-
     .dashboard-sidebar .dashboard-sidebar-header .dashboard-sidebar-header-text {
         color: #fff;
         font-size: 24px;
     }
-
     .dashboard-sidebar .sidebar-header {
         color: rgba(255, 255, 255, 0.3);
         font-size: 0.7rem;
@@ -36,7 +33,6 @@
         position: relative;
         text-transform: uppercase;
     }
-
     .dashboard-sidebar .sidebar-header .sidebar-header-text {
         display: inline-block;
         margin: 0;
@@ -44,29 +40,24 @@
         top: -2px;
         font-size: 18px;
     }
-
     .dashboard-sidebar .dashboard-list {
         clear: both;
         list-style-type: none;
         margin: 0;
         padding: 0;
     }
-
     .dashboard-sidebar .dashboard-list .dashboard-list-item.selected {
         background: #34495E;
         color: #fff;
     }
-
     .dashboard-sidebar .dashboard-list .dashboard-list-item:first-child,
     .dashboard-sidebar .dashboard-list .dashboard-list-item:only-child {
         border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
-
     .dashboard-sidebar .dashboard-list .dashboard-list-item:hover {
         background: #34495E;
         color: rgba(255, 255, 255, 0.9);
     }
-
     .dashboard-sidebar .dashboard-list .dashboard-list-item {
         -webkit-transition: all 200ms linear;
         -moz-transition: all 200ms linear;
@@ -79,11 +70,9 @@
         line-height: 42px;
         padding: 0 20px;
     }
-
     .type-count {
         margin: 11px 0;
     }
-
     .badge {
         background-color: #e74c3c;
     }
@@ -130,7 +119,6 @@
     var env_conf = require('../../config/env_development.json');
     var connect = require('../services/mongodb-server/server').connect(env_conf.test.url, env_conf.test.options);
     var assert = require('assert');
-
     module.exports = {
         name: "Sidebar",
         props: [
@@ -146,7 +134,6 @@
                 isType: false,
             }
         },
-
         // // Anything within the ready function will run when the application loads
         ready: function() {
             // When the application loads, we want to call the method that initializes
@@ -161,13 +148,12 @@
             // }, function(response) {
             //     // error callback
             // });
-
             // 使用mongodb获取数据
             var self = this;
             connect(function(db) {
                 // Get the documents collection
                 var userCollection = db.collection('mb_user');
-                var statusCollection = db.collection('mb_status');
+                var summaryCollection = db.collection('mb_summary');
                 var username = self.userName;
                 // Find some documents
                 userCollection.find({
@@ -175,7 +161,7 @@
                 }).toArray(function(err, docs) {
                     var msgTypes = env_conf.messageTypes;
                     var msgCount = [];
-                    statusCollection.find({userid:docs[0].userid}).sort({
+                    summaryCollection.find({userid:docs[0].userid}).sort({
                         "typeid":1
                     }).toArray(function(err,doc){
                         for (var i = 0; i < msgTypes.length; i++) {
@@ -197,7 +183,6 @@
                 //     console.log(docs)
                 // });
             });
-
             // 删除写法
             // this.$http({
             //     url: 'http://localhost:3000/messageTypes/8',
@@ -206,7 +191,6 @@
             //     console.log('删除成功');
             // })
         },
-
         methods: {
             allMessages() {
                 this.$set('isAll', true);
@@ -248,7 +232,6 @@
                 this.$set('isRead', false);
                 this.$set('isUnRead', false);
                 this.$set('isType', true);
-
                 // // 根据id查询
                 // this.$http({
                 //     url: 'http://localhost:3000/messageTypes',
@@ -260,9 +243,7 @@
                 // }, function(response) {
                 //     // error callback
                 // });
-
                 this.$dispatch('searchType', messageType.id);
-
                 return this.$route.router.go({
                     path: '/type/' + messageType.title
                 });
@@ -272,17 +253,15 @@
                 var self = this;
                 connect(function(db) {
                     var userCollection = db.collection('mb_user');
-                    var statusCollection = db.collection('mb_status');
+                    var summaryCollection = db.collection('mb_summary');
                     userCollection.find({username:username}).toArray(function(err,docs){
-                        statusCollection.update({
+                        summaryCollection.update({
                             userid:docs[0].userid,typeid:typeid
                         },{$set: {count: self.messageTypes[typeid - 1].count }});
                     });
                 });
             }
-
         },
-
         events: {
             'siderbar-markRead': function(typeid) {
                 var self = this;
@@ -301,7 +280,6 @@
             'siderbar-newMsg': function(typeid) {
                 this.messageTypes[typeid - 1].count += 1;
             }
-
         }
     }
 </script>

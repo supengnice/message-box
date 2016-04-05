@@ -2,7 +2,6 @@
     footer {
         background: none;
     }
-
     .dashboard .dashboard-header {
         background: #fff;
         border-bottom: 1px solid rgba(55, 53, 112, 0.1);
@@ -13,14 +12,12 @@
         left: 192px;
         right: 0;
     }
-
     .dashboard .dashboard-header h4 {
         color: #2C3E50;
         font-size: 24px;
         display: inline-block;
         margin-left: 20px;
     }
-
     .dashboard .dashboard-header .settings-trigger {
         -webkit-transition: color 150ms linear;
         -moz-transition: color 150ms linear;
@@ -33,17 +30,14 @@
         margin-right: 10px;
         top: -3px;
     }
-
     .dashboard-header .dropdown-toggle {
         color: #34495e;
         margin-right: 20px;
     }
     /* dropdown */
-
     .open .dropdown-toggle {
         color: #34495e !important;
     }
-
     .open .dropdown-menu,
     .dropdown-menu {
         margin: 8px !important;
@@ -51,16 +45,13 @@
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
         background: #fff;
     }
-
     .dropdown-menu .divider {
         margin: 0;
     }
-
     .open .dropdown-menu li > a:hover {
         color: rgba(52, 73, 94, 0.75);
         background: #
     }
-
     .dashboard-summaries {
         position: absolute;
         top: 60px;
@@ -71,7 +62,6 @@
         width: 320px;
         border-right: 1px solid rgba(55, 53, 112, 0.08);
     }
-
     .dashboard-message-detail {
         background: #fff;
         color: #2C3E50;
@@ -82,7 +72,6 @@
         bottom: 0;
         min-width: 448px;
     }
-
     .dashboard-message-detail .empty-placeholder {
         -webkit-transform: translateY(-50%);
         -moz-transform: translateY(-50%);
@@ -98,7 +87,6 @@
         text-align: center;
         width: 100%;
     }
-
     .dashboard-message-detail .manage-message {
         width: 100%;
         height: 48px;
@@ -108,11 +96,9 @@
         position: absolute;
         z-index: 99;
     }
-
     .dashboard-message-detail .manage-message .btn-marked {
         margin: 10px;
     }
-
     .form-control-feedback {
         position: absolute;
         top: 2px;
@@ -126,7 +112,6 @@
         border-radius: 6px;
     }
     /* 消息列表 */
-
     .summaries {
         box-shadow: 1px 0 3px rgba(55, 53, 112, 0.08);
         list-style-type: none;
@@ -134,7 +119,6 @@
         padding: 0;
         width: 100%;
     }
-
     .summaries .summary {
         background: #fff;
         background-clip: padding-box;
@@ -144,11 +128,9 @@
         margin: 0;
         padding: 8px 16px;
     }
-
     .summaries .summary:hover {
         background: #fafafa;
     }
-
     .summaries .summary .summary-title h6 {
         display: inline-block;
         margin: 0;
@@ -156,36 +138,29 @@
         font-weight: 600;
         color: #27AE60;
     }
-
     .summaries .summary .summary-time {
         margin: 3px 0;
         font-size: 14px;
         color: #666;
     }
-
     .summaries .summary .summary-desc {
         font-size: 14px;
         color: #666;
     }
-
     .summaries .summary.readed {
         opacity: .8;
     }
-
     .summaries .summary.readed .summary-title h6 {
         color: #666;
     }
-
     .dashboard-summaries-search {
         margin: 6px 20px;
         width: 280px;
     }
-
     .summaries .summary.selected {
         background: #fafafa;
         box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-
     .dashboard-summaries .empty-placeholder {
         -webkit-transform: translateY(-50%);
         transform: translateY(-50%);
@@ -229,7 +204,7 @@
             filterBy searchQuery in 'title' 'desc'  " class="animated fadeIn summary" @click="messageDetail(summary.id)">
                 <article>
                     <header class="summary-title">
-                        <h6 v-if="summary.title.length > 12">{{ summary.title.substring(0,12) }} ...</h6>
+                        <h6 v-if="summary.title.length > 10">{{ summary.title.substring(0,10) }} ...</h6>
                         <h6 v-else>{{ summary.title }}</h6>
                         <time class="summary-time pull-right">{{ summary.sendtime.substr(0,10) }}</time>
                     </header>
@@ -248,7 +223,7 @@
             <p>当前路由参数: {{$route.params | json}}</p>
         </div>
         <pre>
-            {{ $data | json }}
+            {{ $data.summaries | json }}
         </pre> -->
         <div class="empty-placeholder" v-if="summaries.length == 0">暂时没有消息</div>
         <div class="empty-placeholder" v-if="refreshing">
@@ -280,10 +255,8 @@
     // 连接mongodb
     var env_conf = require('../../config/env_development.json');
     var connect = require('../services/mongodb-server/server').connect(env_conf.test.url, env_conf.test.options);
-
     var notifier = require('electron').remote.getGlobal('notifier');
     var marked = require('marked');
-    var jetpack = require('fs-jetpack');
     marked.setOptions({
         renderer: new marked.Renderer(),
         gfm: true,
@@ -294,7 +267,6 @@
         smartLists: true,
         smartypants: false
     });
-
     module.exports = {
         name: 'Main',
         props: [
@@ -334,7 +306,6 @@
                 return true;
             }
         },
-
         data: function() {
             return {
                 title: "所有消息",
@@ -352,7 +323,6 @@
                 sendtime: '',
             }
         },
-
         ready: function() {
             var socket = this.socket;
             this.searchAllSummaries();
@@ -361,37 +331,15 @@
             socket.on('public message', function(data) {
                 self.newMessage(data);
             });
-
             // listen to news event raised by the server
             socket.on('private message', function(data) {
                 self.newMessage(data);
             });
         },
-
         methods: {
             searchAllSummaries() {
-                var self = this;
-                var username = this.userName;
-                connect(function(db) {
-                    var userCollention = db.collection('mb_user');
-                    var collection = db.collection('mb_messages');
-                    userCollention.find({
-                        username: username
-                    }).toArray(function(err, doc) {
-                        collection.find({
-                            $or: [{
-                                userid: doc[0].userid
-                            }, {
-                                type: 'public'
-                            }]
-                        }).sort({
-                            "sendtime": -1
-                        }).toArray(function(err, docs) {
-                            self.summaries = docs;
-                            jetpack.write('./build/assets/data/db.json', docs);
-                        });
-                    });
-                });
+                var typeid = env_conf.typeid;
+                this.getSummaries(typeid,[true,false]);
                 this.mescontent = false;
             },
             markRead(id) {
@@ -408,12 +356,12 @@
                 }
                 connect(function(db) {
                     var userCollention = db.collection('mb_user');
-                    var statusCollection = db.collection('mb_status');
+                    var summaryCollection = db.collection('mb_summary');
                     var username = self.userName;
                     userCollention.find({
                         username: username
                     }).toArray(function(err, docs) {
-                        statusCollection.update({
+                        summaryCollection.update({
                             userid: docs[0].userid,
                             "message.id": id
                         }, {
@@ -423,7 +371,6 @@
                         });
                     });
                 })
-
             },
             markUnread(id) {
                 var self = this;
@@ -437,12 +384,12 @@
                 }
                 connect(function(db) {
                     var userCollention = db.collection('mb_user');
-                    var statusCollection = db.collection('mb_status');
+                    var summaryCollection = db.collection('mb_summary');
                     var username = self.userName;
                     userCollention.find({
                         username: username
                     }).toArray(function(err, docs) {
-                        statusCollection.update({
+                        summaryCollection.update({
                             userid: docs[0].userid,
                             "message.id": id
                         }, {
@@ -468,7 +415,7 @@
                     }
                 }
                 connect(function(db) {
-                    var collection = db.collection('mb_messages');
+                    var collection = db.collection('mb_message');
                     collection.find({}).toArray(function(err, docs) {
                         var messages = docs;
                         self.typeid = messages[messagesId].typeid;
@@ -513,91 +460,79 @@
                     console.log(error);
                     console.log(response);
                 });
+            },
+            getSummaries(typeid,readStat) {
+                var self = this;
+                var username = this.userName;
+                connect(function(db) {
+                    var userCollention = db.collection('mb_user');
+                    var summaryCollection = db.collection('mb_summary');
+                    userCollention.find({
+                        username: username
+                    }).toArray(function(err, docs) {
+                        var cursor = summaryCollection.aggregate([{
+                                $match: {
+                                    userid: docs[0].userid,
+                                    typeid: {
+                                        $in: typeid
+                                    }
+                                }
+                            }, {
+                                $unwind: "$message"
+                            }, {
+                                $project: {
+                                    _id: 0,
+                                    userid: 1,
+                                    typeid: 1,
+                                    id: "$message.id",
+                                    title: "$message.title",
+                                    desc: "$message.desc",
+                                    sendtime: "$message.sendtime",
+                                    read: "$message.read"
+                                }
+                            }, {
+                                $match: {
+                                    read: {
+                                        $in: readStat
+                                    }
+                                }
+                            }, {
+                                $sort: {
+                                    sendtime: -1
+                                }
+                            }
+                            // { $out: "mb_temp" }     // 输出到数据库
+                        ], {
+                            cursor: {
+                                batchSize: 1
+                            }
+                        });
+                        cursor.toArray(function(err, result) {
+                            console.log(result);
+                            self.summaries = result;
+                        });
+                    });
+                });
             }
         },
-
         events: {
             'summaries-searchAll': 'searchAllSummaries',
             'summaries-searchRead': function() {
-                var self = this;
-                var username = this.userName;
-                connect(function(db) {
-                    var userCollention = db.collection('mb_user');
-                    var collection = db.collection('mb_messages');
-                    userCollention.find({
-                        username: username
-                    }).toArray(function(err, doc) {
-                        collection.find({
-                            read: true,
-                            $or: [{
-                                userid: doc[0].userid
-                            }, {
-                                type: 'public'
-                            }]
-                        }).sort({
-                            "sendtime": -1
-                        }).toArray(function(err, docs) {
-                            self.summaries = docs;
-                        });
-
-                    });
-                });
+                var typeid = env_conf.typeid;
+                this.getSummaries(typeid,[true]);
                 this.mescontent = false;
             },
             'summaries-searchUnread': function() {
-                var self = this;
-                var username = this.userName;
-                connect(function(db) {
-                    var userCollention = db.collection('mb_user');
-                    var collection = db.collection('mb_messages');
-                    userCollention.find({
-                        username: username
-                    }).toArray(function(err, doc) {
-                        collection.find({
-                            read: false,
-                            $or: [{
-                                userid: doc[0].userid
-                            }, {
-                                type: 'public'
-                            }]
-                        }).sort({
-                            "sendtime": -1
-                        }).toArray(function(err, docs) {
-                            self.summaries = docs;
-                        });
-
-                    });
-                });
+                var typeid = env_conf.typeid;
+                this.getSummaries(typeid,[false]);
                 this.mescontent = false;
             },
             'summaries-searchType': function(id) {
-                var self = this;
-                var username = this.userName;
-                connect(function(db) {
-                    var userCollention = db.collection('mb_user');
-                    var collection = db.collection('mb_messages');
-                    userCollention.find({
-                        username: username
-                    }).toArray(function(err, doc) {
-                        collection.find({
-                            typeid: id,
-                            $or: [{
-                                userid: doc[0].userid
-                            }, {
-                                type: 'public'
-                            }]
-                        }).sort({
-                            "sendtime": -1
-                        }).toArray(function(err, docs) {
-                            self.summaries = docs;
-                        });
-
-                    });
-                });
+                var typeid = [id];
+                this.getSummaries(typeid,[true,false]);
                 this.mescontent = false;
             }
         },
-
         components: {
             PulseLoader,
             'message-detail': Message
