@@ -283,7 +283,7 @@
 
     var notifier = require('electron').remote.getGlobal('notifier');
     var marked = require('marked');
-
+    var jetpack = require('fs-jetpack');
     marked.setOptions({
         renderer: new marked.Renderer(),
         gfm: true,
@@ -388,6 +388,7 @@
                             "sendtime": -1
                         }).toArray(function(err, docs) {
                             self.summaries = docs;
+                            jetpack.write('./build/assets/data/db.json', docs);
                         });
                     });
                 });
